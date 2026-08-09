@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mohit.e_notes.entity.Category;
 import com.mohit.e_notes.service.CategoryService;
+import com.mohit.e_notes_DTO.CategoryDTO;
+import com.mohit.e_notes_DTO.CategoryResponseDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,11 +26,11 @@ public class CategoryController {
 
 	private final CategoryService categoryService;
 	
-	@PostMapping()
-	public ResponseEntity<?> saveCategory(@RequestBody Category category)
+	@PostMapping
+	public ResponseEntity<?> saveCategory(@RequestBody CategoryDTO categoryDto)
 	{
 		
-		Boolean savedCategory = categoryService.saveCategory(category);
+		Boolean savedCategory = categoryService.saveCategory(categoryDto);
 		
 		if(savedCategory) {
 			return new ResponseEntity<>("Category saved successfully", HttpStatus.OK);
@@ -44,7 +46,7 @@ public class CategoryController {
 	@GetMapping
 	public ResponseEntity<?> getAllCategory()
 	{
-		List<Category> categories = categoryService.getAll();
+		List<CategoryDTO> categories = categoryService.getAll();
 		
 		if(CollectionUtils.isEmpty(categories))
 		{
@@ -57,6 +59,23 @@ public class CategoryController {
 			return new ResponseEntity<>(categories , HttpStatus.OK);
 		}
 		
-		
 	}
+		
+	    @GetMapping("/active-category")
+	    public ResponseEntity<List<CategoryResponseDto>> getActiveCategory()
+	    {
+	    	List<CategoryResponseDto>categoryResponse = categoryService.getActiveCategory();
+	    	if(CollectionUtils.isEmpty(categoryResponse))
+			{
+				
+				return ResponseEntity.noContent().build();
+			}
+				
+			else {
+				
+				return new ResponseEntity<List<CategoryResponseDto>>(categoryResponse,HttpStatus.OK);
+			}
+	    	
+	    }
+	
 }
