@@ -13,6 +13,7 @@ import com.mohit.e_notes.entity.Category;
 import com.mohit.e_notes.repository.CategoryRepository;
 import com.mohit.e_notes.service.CategoryService;
 import com.mohit.e_notes_DTO.CategoryDTO;
+import com.mohit.e_notes_DTO.CategoryRequestDto;
 import com.mohit.e_notes_DTO.CategoryResponseDto;
 
 import jakarta.transaction.Transactional;
@@ -130,4 +131,28 @@ public class CategoryServiceImpl implements CategoryService {
 		
 	}
 
-}
+	@Override
+	public String updateCategory(Integer id, CategoryRequestDto categoryRequestDto) {
+		// TODO Auto-generated method stub
+		Optional<Category> category = categoryRepository.findById(id);
+		if(category.isEmpty()) 
+		{
+			return "Category with id not found " + id;
+		}
+		
+		
+		Category categoryToUpdate = category.get();
+		mapper.map(categoryRequestDto,categoryToUpdate);
+		categoryToUpdate.setUpdatedBy(1);
+		categoryToUpdate.setUpdatedOn(new Date());
+		categoryRepository.save(categoryToUpdate);
+		
+		return "Category updated successfully with id : " + id; 
+		
+		}
+		
+		
+		
+		
+	}
+
