@@ -2,6 +2,7 @@ package com.mohit.e_notes.serviceImpl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import com.mohit.e_notes.service.CategoryService;
 import com.mohit.e_notes_DTO.CategoryDTO;
 import com.mohit.e_notes_DTO.CategoryResponseDto;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
@@ -51,7 +53,7 @@ public class CategoryServiceImpl implements CategoryService {
 	public List<CategoryDTO> getAll() {
 		// TODO Auto-generated method stub
 		
-		List<Category> categoryList = categoryRepository.findAll();
+		List<Category> categoryList = categoryRepository.findByIsDeletedFalse();
 		
 		 List<CategoryDTO> categoryDtoList = categoryList.stream().map(cat->mapper.map(cat,CategoryDTO.class)).toList();
 		
@@ -61,11 +63,71 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public List<CategoryResponseDto> getActiveCategory() {
 		// TODO Auto-generated method stub
-		 List<Category> activeCategories = categoryRepository.findByisActiveTrue();
+		 List<Category> activeCategories = categoryRepository.findByIsActiveTrueAndIsDeletedFalse();
 		List<CategoryResponseDto> list = activeCategories.stream()
 				.map(cat->mapper.map(cat, CategoryResponseDto.class)).toList();
 		
 		return list;
+	}
+
+	@Override
+	public CategoryDTO getCategoryById(Integer id) {
+		// TODO Auto-generated method stub
+		Optional<Category> category = categoryRepository.findById(id);
+		
+		if(category.isPresent())
+		{
+			Category categoryObject = category.get();
+		  return	mapper.map(categoryObject, CategoryDTO.class);
+		}
+		
+		
+		return null;
+	}
+
+	@Override
+	@Transactional
+	public String deleteCategoryById(Integer id) {
+		// TODO Auto-generated method stub
+		
+//		Optional<Category> category = categoryRepository.findById(id);
+//		if(category.isPresent())
+//		{
+//		   categoryRepository.deleteById(id);
+//		   return "Category deleted with successfully"+id;
+//		}
+//		else {
+//			return  "Category not found with id : " + id;
+//		}
+		
+		int value = categoryRepository.deleteCategoryById(id);
+		if(value == 0)
+		{
+			return "Category with ID not found" + id;
+			
+		}
+		
+		else {
+			return " Category deleted successfully " + id;
+		}
+	}
+
+	@Override
+	@Transactional
+	public String softDeleteCategory(Integer id) {
+		// TODO Auto-generated method stub
+		
+		Optional<Category> category = categoryRepository.findById(id);
+		if(category.isPresent())
+		{
+		   category.get().setIsDeleted(true);
+		   return "Category soft deleted  successfully"+id;
+		}
+		else {
+			return  "Category not found with id : " + id;
+		}
+		
+		
 	}
 
 }

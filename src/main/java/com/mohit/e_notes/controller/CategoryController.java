@@ -6,7 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,7 +64,7 @@ public class CategoryController {
 		
 	}
 		
-	    @GetMapping("/active-category")
+	    @GetMapping("/active")
 	    public ResponseEntity<List<CategoryResponseDto>> getActiveCategory()
 	    {
 	    	List<CategoryResponseDto>categoryResponse = categoryService.getActiveCategory();
@@ -77,5 +80,48 @@ public class CategoryController {
 			}
 	    	
 	    }
+	    	
+	    
+	    	@GetMapping("/{id}")
+	    	public ResponseEntity<?> getCategoryById(
+	    	        @PathVariable Integer id) {
+
+	    	    CategoryDTO categoryDto = categoryService.getCategoryById(id);
+
+	    	    if (ObjectUtils.isEmpty(categoryDto)) {
+	    	        return new ResponseEntity<>("Category with particular id not found: " + id ,HttpStatus.NOT_FOUND);
+	    	    }
+
+	    	    return new ResponseEntity<>(categoryDto, HttpStatus.OK);
+	    	}
+	    	
+	    	@DeleteMapping("/{id}/permanent")
+	    	public ResponseEntity<?> deleteCategory(@PathVariable Integer id)
+	    	{
+	    		String response = categoryService.deleteCategoryById(id);
+	    		
+	    		if(response.contains("not found"))
+	    		{
+	    			return ResponseEntity.notFound().build();
+	    		}
+	    		
+	    		return ResponseEntity.ok().build();
+	    	}
+	    	
+	    	@DeleteMapping("/{id}/soft-delete")
+	    	public ResponseEntity<?> softDeletCategory(@PathVariable Integer id)
+	    	{
+	    		String response = categoryService.softDeleteCategory(id);
+	    		if(response.contains("not found"))
+	    		{
+	    			return ResponseEntity.notFound().build();
+	    		}
+	    		
+	    		return ResponseEntity.ok().build();
+	    		
+	    	}
+	    	
+	    
+	    }
 	
-}
+
