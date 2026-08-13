@@ -10,6 +10,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.mohit.e_notes.entity.Category;
+import com.mohit.e_notes.exception.ResourceNotFoundException;
 import com.mohit.e_notes.repository.CategoryRepository;
 import com.mohit.e_notes.service.CategoryService;
 import com.mohit.e_notes_DTO.CategoryDTO;
@@ -74,12 +75,14 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public CategoryDTO getCategoryById(Integer id) {
 		// TODO Auto-generated method stub
-		Optional<Category> category = categoryRepository.findById(id);
+		Category category = categoryRepository.findById(id)
+				.orElseThrow(()-> new ResourceNotFoundException("Category Not found with id " + id));
 		
-		if(category.isPresent())
+		if(!(ObjectUtils.isEmpty(category)))
 		{
-			Category categoryObject = category.get();
-		  return	mapper.map(categoryObject, CategoryDTO.class);
+//		  Category categoryObject = category.get();
+			
+		  return mapper.map(category, CategoryDTO.class);
 		}
 		
 		

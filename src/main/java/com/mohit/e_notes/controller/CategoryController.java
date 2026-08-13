@@ -49,7 +49,13 @@ public class CategoryController {
 	
 	@GetMapping
 	public ResponseEntity<?> getAllCategory()
+	
+	
 	{
+		
+		String nm = null;
+		nm.toUpperCase();
+				
 		List<CategoryDTO> categories = categoryService.getAll();
 		
 		if(CollectionUtils.isEmpty(categories))
