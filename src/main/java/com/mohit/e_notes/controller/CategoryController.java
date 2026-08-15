@@ -21,6 +21,7 @@ import com.mohit.e_notes_DTO.CategoryDTO;
 import com.mohit.e_notes_DTO.CategoryRequestDto;
 import com.mohit.e_notes_DTO.CategoryResponseDto;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -31,7 +32,7 @@ public class CategoryController {
 	private final CategoryService categoryService;
 	
 	@PostMapping
-	public ResponseEntity<?> saveCategory(@RequestBody CategoryDTO categoryDto)
+	public ResponseEntity<?> saveCategory( @Valid @RequestBody CategoryDTO categoryDto)
 	{
 		
 		Boolean savedCategory = categoryService.saveCategory(categoryDto);
@@ -52,10 +53,6 @@ public class CategoryController {
 	
 	
 	{
-		
-		String nm = null;
-		nm.toUpperCase();
-				
 		List<CategoryDTO> categories = categoryService.getAll();
 		
 		if(CollectionUtils.isEmpty(categories))
